@@ -30,13 +30,8 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String jwt =request.getHeader("Authorization").substring(7);
-        System.out.println("jwt: "+jwt);
-        logger.info("Role.ROLE_ADMIN: "+ Role.ROLE_ADMIN + " \nRole.ROLE_ADMIN.getAuthority():" + Role.ROLE_ADMIN.getAuthority()+ " \nRole.ROLE_ADMIN.getRole()"+ Role.ROLE_ADMIN.getRole()+" \nRole.ROLE_ADMIN.name():"+Role.ROLE_ADMIN.name());
         if (jwt != null){
-            System.out.println("1");
             if (getSignKey() != null){
-                System.out.println("2");
-
                 Claims claims = null;
                 try {
                     claims = Jwts.parserBuilder()
@@ -48,8 +43,9 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
                     logger.info(e.getMessage());
                 }
 
-                String username = String.valueOf(claims.get("username"));
-                List<String> authorities = (List<String>) claims.get("authorities");
+                if (claims != null){
+                    String username = String.valueOf(claims.get("username"));
+                    List<String> authorities = (List<String>) claims.get("authorities");
                 /*
                 List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
 
@@ -60,14 +56,17 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
                         grantedAuthorities.add(Role.ROLE_USER);
                     }
                 }*/
-                List<GrantedAuthority> grantedAuthorities = authorities.stream()
-                        .map(Role::fromString) // String'den Role'e dönüştür
-                        .collect(Collectors.toList());
+                    List<GrantedAuthority> grantedAuthorities = authorities.stream()
+                            .map(Role::fromString) // String'den Role'e dönüştür
+                            .collect(Collectors.toList());
 
-                logger.info("username: "+username+" auth: "+grantedAuthorities);
-                logger.info("authorixation:"+authorities);
-                Authentication authentication = new UsernamePasswordAuthenticationToken(username,null,grantedAuthorities);
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                    logger.info("username: "+username+" auth: "+grantedAuthorities);
+                    logger.info("authorixation:"+authorities);
+                    Authentication authentication = new UsernamePasswordAuthenticationToken(username,null,grantedAuthorities);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }else {
+                    throw new RuntimeException("JWT not parsed -JWTTokenValidatorFilter");
+                }
             }
         }
         filterChain.doFilter(request,response);
@@ -79,9 +78,6 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-        logger.info("diğerleri");
-        boolean x =  request.getServletPath().equals("/auth/login") || request.getHeader("Authorization")==null;
-        logger.info("x: "+ x);
-        return x;
+        return request.getServletPath().equals("/auth/login") || request.getHeader("Authorization")==null;
     }
 }

@@ -21,8 +21,9 @@ public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String key = "9wTq6NjcJwE3BcXt9wTq6NjcJwE3BcXt";
         if (authentication != null){
-            SecretKey secretKey = Keys.hmacShaKeyFor("9wTq6NjcJwE3BcXt9wTq6NjcJwE3BcXt".getBytes(StandardCharsets.UTF_8));
+            SecretKey secretKey = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
             String jwt = Jwts.builder()
                     .setIssuer("NoAdmin")
                     .setSubject("Jwt")
@@ -39,7 +40,6 @@ public class JWTTokenGeneratorFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         boolean x = !request.getServletPath().equals("/auth/login");
-        logger.info("JwtTokenGenerator ----------> "+x);
         return x;
     }
 }
