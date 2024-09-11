@@ -9,8 +9,8 @@ import java.util.Collection;
 import java.util.Set;
 
 @Entity
-@Table(name = "users")
-public class User {
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class User {
     @Id
     @SequenceGenerator(name = "user_seq",sequenceName = "user_seq",allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "user_seq")

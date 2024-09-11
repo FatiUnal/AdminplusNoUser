@@ -17,19 +17,4 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping
-    public ResponseEntity<User> register(@RequestBody UserRegisterDto userRegisterDto){
-        return new ResponseEntity<>(userService.save(userRegisterDto), HttpStatus.CREATED);
-    }
-
-    @GetMapping("/admin")
-    public String admin(){
-        return "admin";
-    }
-
-
-    @GetMapping("/noadmin")
-    public String noadmin(){
-        return "noadmin";
-    }
 }

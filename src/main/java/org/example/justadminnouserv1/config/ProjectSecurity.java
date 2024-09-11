@@ -47,10 +47,10 @@ public class ProjectSecurity {
                 }))
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(x->x.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(x->x.
-                    requestMatchers(HttpMethod.POST,"api/v1").permitAll()
-                        .requestMatchers(HttpMethod.GET,"api/v1/admin").hasAuthority(Role.ROLE_ADMIN.getAuthority())
-                        .requestMatchers(HttpMethod.GET,"api/v1/noadmin").authenticated()
+                .authorizeHttpRequests(x->x
+                        //.requestMatchers(HttpMethod.POST,"/api/v1/author").hasAuthority(Role.ROLE_ADMIN.getAuthority())
+                        .requestMatchers(HttpMethod.POST,"/api/v1/author").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/v1/admin").permitAll()
                         .anyRequest().authenticated())
                 .addFilterAfter(new JWTTokenGeneratorFilter(), BasicAuthenticationFilter.class)
                 .addFilterBefore(new JWTTokenValidatorFilter(), BasicAuthenticationFilter.class)
