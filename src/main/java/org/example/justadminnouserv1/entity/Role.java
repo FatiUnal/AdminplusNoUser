@@ -19,4 +19,12 @@ public enum Role implements GrantedAuthority {
     public String getAuthority() {
         return this.role;
     }
+    public static Role fromString(String role) {
+        for (Role r : Role.values()) {
+            if (r.role.equalsIgnoreCase(role)) {
+                return r;
+            }
+        }
+        throw new IllegalArgumentException("Unknown role: " + role);
+    }
 }

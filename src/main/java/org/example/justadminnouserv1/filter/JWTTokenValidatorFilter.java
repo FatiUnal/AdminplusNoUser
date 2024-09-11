@@ -49,15 +49,20 @@ public class JWTTokenValidatorFilter extends OncePerRequestFilter {
                 }
 
                 String username = String.valueOf(claims.get("username"));
-                List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
                 List<String> authorities = (List<String>) claims.get("authorities");
+                /*
+                List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
+
                 for (int i = 0;i< authorities.size();i++){
                     if (authorities.get(i).equals("ADMIN")){
                         grantedAuthorities.add(Role.ROLE_ADMIN);
                     } else if (authorities.get(i).equals("USER")) {
                         grantedAuthorities.add(Role.ROLE_USER);
                     }
-                }
+                }*/
+                List<GrantedAuthority> grantedAuthorities = authorities.stream()
+                        .map(Role::fromString) // String'den Role'e dönüştür
+                        .collect(Collectors.toList());
 
                 logger.info("username: "+username+" auth: "+grantedAuthorities);
                 logger.info("authorixation:"+authorities);
